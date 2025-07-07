@@ -1,0 +1,32 @@
+name: Transcribe Audio
+
+on: [push]
+
+jobs:
+  transcribe:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          sudo apt-get install ffmpeg
+
+      - name: Run Whisper transcription
+        run: |
+          python transcribe.py
+
+      - name: Commit and push transcription
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add Transkription.md
+          git commit -m "Automatische Transkription aktualisiert" || echo "Keine Änderungen vorhanden"
+          git push
